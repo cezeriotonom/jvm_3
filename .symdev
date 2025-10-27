@@ -1,0 +1,12 @@
+{
+  "project_id" : 711,
+  "project_name" : "jvm_3",
+  "language" : "JAVA",
+  "ai_chat_id" : "1xwvOzOq2GH0yvPTzKv_mqiYLN0G9umOU",
+  "symdev_account_email" : "cezeriotonom@gmail.com",
+  "llm_account_email" : "symdev.pro@gmail.com",
+  "github_repo_url" : "https://github.com/cezeriotonom/jvm_3.git",
+  "build_command" : null,
+  "run_command" : null,
+  "open_browser_url" : null
+}
