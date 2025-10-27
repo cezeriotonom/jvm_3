@@ -4,30 +4,28 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    private final List<Balloon> balloons = new ArrayList<>();
-    private final List<Particle> particles = new ArrayList<>();
+    private final List<Balloon> balloons = new CopyOnWriteArrayList<>();
+    private final List<Particle> particles = new CopyOnWriteArrayList<>();
     private int score = 0;
     private final Random random = new Random();
     private Thread gameThread;
 
     public GamePanel() {
         setPreferredSize(new Dimension(800, 600));
-        setBackground(Color.CYAN);
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                for (int i = balloons.size() - 1; i >= 0; i--) {
-                    Balloon b = balloons.get(i);
+                for (Balloon b : balloons) {
                     if (b.contains(e.getPoint())) {
                         createExplosion(b.x, b.y, b.color);
-                        balloons.remove(i);
+                        balloons.remove(b);
                         score += 10;
                         break; 
                     }
@@ -63,7 +61,6 @@ public class GamePanel extends JPanel implements Runnable {
         double amountOfTicks = 60.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
-        long timer = System.currentTimeMillis();
         int balloonSpawnCounter = 0;
 
         while (true) {
@@ -76,12 +73,8 @@ public class GamePanel extends JPanel implements Runnable {
             }
             repaint();
 
-            if (System.currentTimeMillis() - timer > 1000) {
-                timer += 1000;
-            }
-            
             balloonSpawnCounter++;
-            if (balloonSpawnCounter > 60) {
+            if (balloonSpawnCounter > 60) { 
                  spawnBalloon();
                  balloonSpawnCounter = 0;
             }
@@ -104,19 +97,17 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void update() {
-        for (int i = balloons.size() - 1; i >= 0; i--) {
-            Balloon b = balloons.get(i);
+        for (Balloon b : balloons) {
             b.update();
-            if (b.y < -b.radius) {
-                balloons.remove(i);
+            if (b.y < -b.radius) { 
+                balloons.remove(b);
             }
         }
 
-        for (int i = particles.size() - 1; i >= 0; i--) {
-            Particle p = particles.get(i);
+        for (Particle p : particles) {
             p.update();
             if (!p.isAlive()) {
-                particles.remove(i);
+                particles.remove(p);
             }
         }
     }
@@ -125,6 +116,12 @@ public class GamePanel extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Modern Gradient Background
+        GradientPaint gp = new GradientPaint(0, 0, new Color(26, 37, 76), 0, getHeight(), new Color(10, 10, 40));
+        g2d.setPaint(gp);
+        g2d.fillRect(0, 0, getWidth(), getHeight());
 
         for (Balloon b : balloons) {
             b.draw(g2d);
@@ -134,8 +131,9 @@ public class GamePanel extends JPanel implements Runnable {
             p.draw(g2d);
         }
 
-        g2d.setColor(Color.BLACK);
-        g2d.setFont(new Font("Arial", Font.BOLD, 24));
+        // Draw Score with a more visible color
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("Segoe UI", Font.BOLD, 24));
         g2d.drawString("Score: " + score, 10, 30);
     }
 }
