@@ -6,7 +6,7 @@
   "symdev_account_email" : "cezeriotonom@gmail.com",
   "llm_account_email" : "symdev.pro@gmail.com",
   "github_repo_url" : "https://github.com/cezeriotonom/jvm_3.git",
-  "build_command" : null,
-  "run_command" : null,
+  "build_command" : "mvn package",
+  "run_command" : "mvn exec:java",
   "open_browser_url" : null
 }
